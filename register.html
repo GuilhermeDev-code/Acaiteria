@@ -1,0 +1,962 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agendar-se - Açaí</title>
+    <style>
+        /* Estilos gerais */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #6A4C93, #9B7EDE, #C8B6E2, #E8D5F2);
+            min-height: 100vh;
+        }
+
+        /* Header e Navegação */
+        header {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(15px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        nav {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 1rem;
+        }
+
+        nav ul {
+            list-style: none;
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+            flex-wrap: wrap;
+        }
+
+        nav ul li a {
+            text-decoration: none;
+            color: white;
+            font-weight: 500;
+            padding: 0.5rem 1rem;
+            border-radius: 25px;
+            transition: all 0.3s ease;
+        }
+
+        nav ul li a:hover,
+        nav ul li a.active {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-1px);
+        }
+
+        .logo {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .maps-link {
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: white;
+            font-weight: 500;
+            padding: 0.5rem 1rem;
+            border-radius: 25px;
+            background: rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .maps-link:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .maps-icon {
+            width: 16px;
+            height: 16px;
+        }
+
+        /* Main Content */
+        main {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .hero-section {
+            text-align: center;
+            color: white;
+            margin: 3rem 0;
+            animation: fadeInUp 1s ease;
+        }
+
+        .hero-section h1 {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .hero-section p {
+            font-size: 1.3rem;
+            opacity: 0.9;
+            max-width: 600px;
+            margin: 0 auto 2rem;
+            line-height: 1.6;
+        }
+
+        /* Formulário de Agendamento */
+        .booking-container {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(15px);
+            border-radius: 30px;
+            padding: 3rem;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            animation: fadeInUp 1s ease 0.3s both;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        }
+
+        .booking-form {
+            display: grid;
+            gap: 2rem;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+        }
+
+        label {
+            color: white;
+            font-weight: 500;
+            font-size: 1.1rem;
+            margin-bottom: 0.5rem;
+        }
+
+        input, select, textarea {
+            padding: 1rem;
+            border: none;
+            border-radius: 15px;
+            background: rgba(255, 255, 255, 0.9);
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            outline: none;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            background: rgba(255, 255, 255, 1);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 120px;
+            font-family: inherit;
+        }
+
+        .submit-btn {
+            background: linear-gradient(45deg, #6A4C93, #9B7EDE);
+            color: white;
+            border: none;
+            padding: 1.2rem 2rem;
+            border-radius: 25px;
+            font-size: 1.2rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            margin-top: 1rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 35px rgba(106, 76, 147, 0.4);
+        }
+
+        .submit-btn:active {
+            transform: translateY(-1px);
+        }
+
+        .submit-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .submit-btn:hover::before {
+            left: 100%;
+        }
+
+        /* Mensagens de Sucesso/Erro */
+        .success-message {
+            background: linear-gradient(45deg, #4CAF50, #66BB6A);
+            color: white;
+            padding: 1rem;
+            border-radius: 15px;
+            text-align: center;
+            margin-bottom: 2rem;
+            display: none;
+            animation: slideInDown 0.5s ease;
+        }
+
+        .required {
+            color: #ff6b6b;
+        }
+
+        .form-group.error input,
+        .form-group.error select,
+        .form-group.error textarea {
+            border: 2px solid #ff6b6b;
+            background: rgba(255, 107, 107, 0.1);
+        }
+
+        .error-message {
+            color: #ff6b6b;
+            font-size: 0.9rem;
+            margin-top: 0.25rem;
+        }
+
+        /* Prancheta de Pedidos */
+        .order-board {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(15px);
+            border-radius: 30px;
+            padding: 2rem;
+            margin: 2rem auto;
+            max-width: 800px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .order-board h2 {
+            color: white;
+            text-align: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .order-item {
+            background: rgba(255, 255, 255, 0.08);
+            padding: 1rem;
+            border-radius: 15px;
+            margin-bottom: 1rem;
+            position: relative;
+        }
+
+        .item-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .remove-item-btn {
+            background: #ff6b6b;
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .remove-item-btn:hover {
+            background: #ff5252;
+        }
+
+        .order-item label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: white;
+        }
+
+        .order-item select, 
+        .order-item input {
+            width: 100%;
+            margin-bottom: 1rem;
+            background: rgba(255, 255, 255, 0.9);
+        }
+
+        .add-item-btn {
+            background: #6A4C93;
+            color: white;
+            border: none;
+            padding: 0.8rem 1.5rem;
+            border-radius: 25px;
+            cursor: pointer;
+            display: block;
+            margin: 1rem auto 0;
+        }
+
+        /* Gerenciamento de Recheios (Dono) */
+        .topping-management-section {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(15px);
+            border-radius: 30px;
+            padding: 3rem;
+            margin: 2rem auto;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            color: white;
+        }
+
+        .topping-management-section h2 {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .topping-list {
+            list-style: none;
+            padding: 0;
+            margin-bottom: 2rem;
+        }
+
+        .topping-list li {
+            background: rgba(255, 255, 255, 0.08);
+            padding: 0.8rem 1.5rem;
+            border-radius: 15px;
+            margin-bottom: 0.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .topping-list li button {
+            background: #ff6b6b;
+            color: white;
+            border: none;
+            padding: 0.3rem 0.8rem;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background 0.2s ease;
+        }
+
+        .topping-list li button:hover {
+            background: #ff5252;
+        }
+
+        .add-topping-form {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .add-topping-form input {
+            flex-grow: 1;
+        }
+
+        .add-topping-form button {
+            background: #4CAF50;
+            color: white;
+            border: none;
+            padding: 0.8rem 1.5rem;
+            border-radius: 15px;
+            cursor: pointer;
+            transition: background 0.2s ease;
+        }
+
+        .add-topping-form button:hover {
+            background: #45a049;
+        }
+
+        /* Info Cards */
+        .info-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin: 3rem 0;
+        }
+
+        .info-card {
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(15px);
+            border-radius: 20px;
+            padding: 2rem;
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+            animation: fadeInUp 1s ease;
+        }
+
+        .info-card:hover {
+            transform: translateY(-5px);
+            background: rgba(255, 255, 255, 0.12);
+        }
+
+        .info-card h3 {
+            color: white;
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .info-card p {
+            color: rgba(255, 255, 255, 0.9);
+            line-height: 1.6;
+        }
+
+        /* Footer */
+        footer {
+            background: rgba(0, 0, 0, 0.2);
+            color: white;
+            text-align: center;
+            padding: 2rem;
+            margin-top: 4rem;
+            backdrop-filter: blur(15px);
+        }
+
+        footer span {
+            display: block;
+            margin: 0.5rem 0;
+            opacity: 0.8;
+        }
+
+        /* Animações */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes slideInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Responsividade */
+        @media (max-width: 768px) {
+            nav ul {
+                justify-content: center;
+                gap: 1rem;
+            }
+
+            .hero-section h1 {
+                font-size: 2.5rem;
+            }
+
+            .booking-container, .topping-management-section {
+                padding: 2rem;
+                margin: 1rem;
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+
+            .info-cards {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+
+            main {
+                padding: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <nav>
+            <ul>
+                <li>
+                    <a href="index.html">
+                        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/20/Acapalms.jpg/330px-Acapalms.jpg" alt="Logo" class="logo">
+                    </a>
+                </li>
+                <li><a href="index.html">Início</a></li>
+                <li><a href="sobre.html">Sobre</a></li>
+                <li><a href="#" class="active">Agendar</a></li>
+                <li><a href="login.html">Login</a></li>
+                <li><a href="#" class="active">Registrar</a></li>
+                <li>
+                    <a href="https://www.google.com.br/maps/@-8.769722,-63.8484428,3a,75y,141.4h,76.2t/data=!3m7!1e1!3m5!1sg6QLQCvNkU7qq26p_fxT6Q!2e0!6shttps:%2F%2Fstreetviewpixels-pa.googleapis.com%2Fv1%2Fthumbnail%3Fcb_client%3Dmaps_sv.tactile%26w%3D900%26h%3D600%26pitch%3D13.79523268385769%26panoid%3Dg6QLQCvNkU7qq26p_fxT6Q%26yaw%3D141.39756808270468!7i16384!8i8192?hl=pt-BR&entry=ttu" 
+                       target="_blank" 
+                       class="maps-link">
+                        <img src="https://imgs.search.brave.com/YWupI93kVcN80BQ2kzQOhnIgUCGuD9CLKljsGkitl6Y/rs:fit:32:32:1:0/g:ce/aHR0cDovL2Zhdmlj/b25zLnNlYXJjaC5i/cmF2ZS5jb20vaWNv/bnMvNGQ3YjI5NzA2/MmQ3ZDMxMTQ1YmEx/ODk4N2ViYzBmOWQ2/NWU5ODk1ZTViOGMz/MjFhMDYyZjA5N2Q0/YTEyODlkZC9tYXBz/Lmdvb2dsZS5jb20u/YnIv" 
+                             alt="Maps" 
+                             class="maps-icon">
+                        Ver no Google Maps
+                    </a>
+                </li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <section class="hero-section">
+            <h1>Crie Sua Conta</h1>
+            <p>Registre-se para ter acesso completo ao sistema de agendamentos.</p>
+        </section>
+
+        <div class="success-message" id="successMessage">
+            ✅ Registro realizado com sucesso! Você será redirecionado para login.
+        </div>
+
+        <div class="registration-container">
+            <form id="registerForm" class="booking-form">
+                <div class="form-group">
+                    <label for="regName">Nome Completo <span class="required">*</span></label>
+                    <input type="text" id="regName" name="name" required>
+                    <span class="error-message" id="nameError"></span>
+                </div>
+
+                <div class="form-group">
+                    <label for="regUsername">Nome de Usuário <span class="required">*</span></label>
+                    <input type="text" id="regUsername" name="username" required>
+                    <span class="error-message" id="usernameError"></span>
+                </div>
+
+                <div class="form-group">
+                    <label for="regPhone">Telefone <span class="required">*</span></label>
+                    <input type="tel" id="regPhone" name="phone" required placeholder="(69) 99999-9999">
+                    <span class="error-message" id="phoneError"></span>
+                </div>
+
+                <div class="form-group">
+                    <label for="regPassword">Senha <span class="required">*</span></label>
+                    <input type="password" id="regPassword" name="password" required>
+                    <span class="error-message" id="passwordError"></span>
+                </div>
+
+                <div class="form-group">
+                    <label for="regConfirmPassword">Confirmar Senha <span class="required">*</span></label>
+                    <input type="password" id="regConfirmPassword" name="confirmPassword" required>
+                    <span class="error-message" id="confirmPasswordError"></span>
+                </div>
+
+                <button type="submit" class="submit-btn">
+                    Registrar
+                </button>
+            </form>
+            <p style="color: white; text-align: center; margin-top: 1.5rem;">
+                Já tem uma conta? <a href="login.html" style="color: #9B7EDE; font-weight: 600;">Faça login aqui</a>
+            </p>
+        </div>
+
+        <!-- Seção de Gerenciamento de Recheios (Visível apenas para o Dono) -->
+        <div class="topping-management-section" id="toppingManagementSection" style="display: none;">
+            <h2>Gerenciar Recheios</h2>
+            <ul class="topping-list" id="toppingList">
+                <!-- Recheios serão carregados aqui via JS -->
+            </ul>
+            <form class="add-topping-form" id="addTopingForm">
+                <input type="text" id="newToppingName" placeholder="Nome do novo recheio" required>
+                <button type="submit">Adicionar Recheio</button>
+            </form>
+        </div>
+
+        <div class="order-board">
+            <h2>Prancheta de Pedidos</h2>
+            <div class="order-items" id="orderItems"></div>
+            <button class="add-item-btn" onclick="addNewItem()">+ Adicionar Item</button>
+        </div>
+
+        <div class="booking-container">
+            <form class="booking-form" id="bookingForm">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="name">Nome Completo <span class="required">*</span></label>
+                        <input type="text" id="name" name="name" required>
+                        <span class="error-message" id="nameError"></span>
+                    </div>
+                    <div class="form-group">
+                        <label for="phone">Telefone <span class="required">*</span></label>
+                        <input type="tel" id="phone" name="phone" required placeholder="(69) 99999-9999">
+                        <span class="error-message" id="phoneError"></span>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="service">Tipo de Serviço <span class="required">*</span></label>
+                        <select id="service" name="service" required>
+                            <option value="">Selecione uma opção</option>
+                            <option value="delivery">Delivery</option>
+                            <option value="retirada">Retirada no Local</option>
+                        </select>
+                        <span class="error-message" id="serviceError"></span>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="date">Data Preferida <span class="required">*</span></label>
+                        <input type="date" id="date" name="date" required>
+                        <span class="error-message" id="dateError"></span>
+                    </div>
+                    <div class="form-group">
+                        <label for="time">Horário Preferido <span class="required">*</span></label>
+                        <select id="time" name="time" required>
+                            <option value="">Selecione um horário</option>
+                            <option value="08:00">08:00</option>
+                            <option value="09:00">09:00</option>
+                            <option value="10:00">10:00</option>
+                            <option value="11:00">11:00</option>
+                            <option value="14:00">14:00</option>
+                            <option value="15:00">15:00</option>
+                            <option value="16:00">16:00</option>
+                            <option value="17:00">17:00</option>
+                            <option value="18:00">18:00</option>
+                        </select>
+                        <span class="error-message" id="timeError"></span>
+                    </div>
+                </div>
+
+                <div class="form-group" id="addressGroup" style="display: none;">
+                    <label for="address">Endereço para Delivery</label>
+                    <input type="text" id="address" name="address" placeholder="Rua, número, bairro">
+                    <span class="error-message" id="addressError"></span>
+                </div>
+
+                <div class="form-group">
+                    <label for="observations">Observações</label>
+                    <textarea id="observations" name="observations" placeholder="Alguma observação especial? Alergias? Preferências?"></textarea>
+                </div>
+
+                <button type="submit" class="submit-btn">
+                    Confirmar Agendamento
+                </button>
+            </form>
+        </div>
+
+        <div class="info-cards">
+            <div class="info-card">
+                <h3>🕒 Horários</h3>
+                <p>Funcionamos de segunda a sábado, das 8h às 18h. Domingos apenas delivery mediante agendamento.</p>
+            </div>
+            <div class="info-card">
+                <h3>🚚 Delivery</h3>
+                <p>Entregamos em toda Porto Velho. Taxa de entrega varia conforme a distância. Pedido mínimo R$ 15,00.</p>
+            </div>
+            <div class="info-card">
+                <h3>📱 Contato</h3>
+                <p>Dúvidas? Entre em contato: (69) 9227-7647 ou pelo WhatsApp. Respondemos rapidamente!</p>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <span>&copy; 2025 - Açaí</span>
+        <span>Rua Benedito Inocêncio, 6854 - Três Marias</span>
+    </footer>
+
+    <script>
+        // --- Variáveis Globais (Simulando dados do Backend) ---
+        let availableToppings = JSON.parse(localStorage.getItem('availableToppings')) || [
+            'Morango', 'Banana', 'Granola', 'Leite Ninho', 'Nutella', 'Paçoca', 'Castanha'
+        ];
+
+        // --- Funções de Gerenciamento de Recheios (para o Dono) ---
+        function renderToppingsList() {
+            const toppingListUl = document.getElementById('toppingList');
+            toppingListUl.innerHTML = ''; // Limpa a lista existente
+
+            availableToppings.forEach(topping => {
+                const li = document.createElement('li');
+                li.innerHTML = `
+                    <span>${topping}</span>
+                    <button onclick="removeTopping('${topping}')">Remover</button>
+                `;
+                toppingListUl.appendChild(li);
+            });
+            localStorage.setItem('availableToppings', JSON.stringify(availableToppings)); // Salva no localStorage
+        }
+
+        function addToping(event) {
+            event.preventDefault();
+            const newToppingNameInput = document.getElementById('newToppingName');
+            const newToppingName = newToppingNameInput.value.trim();
+
+            if (newToppingName && !availableToppings.includes(newToppingName)) {
+                availableToppings.push(newToppingName);
+                renderToppingsList();
+                newToppingNameInput.value = ''; // Limpa o input
+            }
+        }
+
+        function removeTopping(toppingToRemove) {
+            availableToppings = availableToppings.filter(topping => topping !== toppingToRemove);
+            renderToppingsList();
+        }
+
+        // --- Lógica de Exibição Condicional (Login) ---
+        document.addEventListener('DOMContentLoaded', () => {
+            const userRole = localStorage.getItem('userRole');
+            const toppingManagementSection = document.getElementById('toppingManagementSection');
+
+            if (userRole === 'dono') {
+                toppingManagementSection.style.display = 'block';
+                renderToppingsList(); // Carrega a lista de recheios para o dono
+                document.getElementById('addTopingForm').addEventListener('submit', addToping);
+            } else {
+                toppingManagementSection.style.display = 'none';
+            }
+        });
+
+        // --- Funções do Formulário de Agendamento ---
+
+        // Configurar data mínima como hoje
+        const today = new Date().toISOString().split('T')[0];
+        document.getElementById('date').min = today;
+
+        // Mostrar/esconder campo de endereço baseado no tipo de serviço
+        document.getElementById('service').addEventListener('change', function() {
+            const addressGroup = document.getElementById('addressGroup');
+            const addressInput = document.getElementById('address');
+            
+            if (this.value === 'delivery') {
+                addressGroup.style.display = 'block';
+                addressInput.required = true;
+            } else {
+                addressGroup.style.display = 'none';
+                addressInput.required = false;
+            }
+        });
+
+        // Formatação de telefone
+        document.getElementById('phone').addEventListener('input', function(e) {
+            let value = e.target.value.replace(/\D/g, '');
+            if (value.length >= 11) {
+                value = value.replace(/(\d{2})(\d{5})(\d{4})/, '($1) $2-$3');
+            } else if (value.length >= 7) {
+                value = value.replace(/(\d{2})(\d{4})(\d{0,4})/, '($1) $2-$3');
+            } else if (value.length >= 3) {
+                value = value.replace(/(\d{2})(\d{0,5})/, '($1) $2');
+            }
+            e.target.value = value;
+        });
+
+        // Validação do formulário
+        function validateForm() {
+            let isValid = true;
+            const form = document.getElementById('bookingForm');
+            const requiredFields = ['name', 'phone', 'service', 'date', 'time'];
+            
+            // Limpar erros anteriores
+            document.querySelectorAll('.form-group').forEach(group => {
+                group.classList.remove('error');
+            });
+            document.querySelectorAll('.error-message').forEach(error => {
+                error.textContent = '';
+            });
+
+            // Validar campos obrigatórios
+            requiredFields.forEach(fieldName => {
+                const field = document.getElementById(fieldName);
+                const fieldGroup = field.closest('.form-group');
+                const errorElement = document.getElementById(fieldName + 'Error');
+                
+                if (!field.value.trim()) {
+                    fieldGroup.classList.add('error');
+                    errorElement.textContent = 'Este campo é obrigatório';
+                    isValid = false;
+                }
+            });
+
+            // Validar endereço se delivery for selecionado
+            const service = document.getElementById('service').value;
+            if (service === 'delivery') {
+                const address = document.getElementById('address');
+                const addressGroup = address.closest('.form-group');
+                const addressError = document.getElementById('addressError');
+                
+                if (!address.value.trim()) {
+                    addressGroup.classList.add('error');
+                    addressError.textContent = 'Endereço é obrigatório para delivery';
+                    isValid = false;
+                }
+            }
+
+            // Validar telefone
+            const phone = document.getElementById('phone');
+            if (phone.value.replace(/\D/g, '').length < 10) {
+                const phoneGroup = phone.closest('.form-group');
+                const phoneError = document.getElementById('phoneError');
+                phoneGroup.classList.add('error');
+                phoneError.textContent = 'Telefone deve ter pelo menos 10 dígitos';
+                isValid = false;
+            }
+
+            // Validar se há pelo menos um item na prancheta
+            const orderItemsCount = document.querySelectorAll('.order-item').length;
+            if (orderItemsCount === 0) {
+                alert('Por favor, adicione pelo menos um item ao seu pedido.');
+                isValid = false;
+            }
+
+            return isValid;
+        }
+
+        // Functions for order board
+        function addNewItem() {
+            const orderItemsContainer = document.getElementById('orderItems');
+            
+            const itemDiv = document.createElement('div');
+            itemDiv.className = 'order-item';
+            itemDiv.innerHTML = `
+                <div class="item-header">
+                    <label>Item #${orderItemsContainer.children.length + 1}</label>
+                    <button class="remove-item-btn" onclick="this.closest('.order-item').remove()">❌ Remover</button>
+                </div>
+                <label>Tamanho:</label>
+                <select class="item-type">
+                    <option value="300ml">Açaí 300ml</option>
+                    <option value="500ml">Açaí 500ml</option>
+                    <option value="700ml">Açaí 700ml</option>
+                </select>
+
+                <label>Quantidade:</label>
+                <input type="number" class="item-quantity" value="1" min="1">
+
+                <div class="toppings-container">
+                    <label>Recheios:</label>
+                    <button type="button" class="add-topping-field-btn" onclick="addTopingField(this)">+ Adicionar Recheio</button>
+                </div>
+            `;
+            orderItemsContainer.appendChild(itemDiv);
+            addTopingField(itemDiv.querySelector('.add-topping-field-btn')); // Adiciona um campo de recheio inicial
+        }
+
+        function addTopingField(buttonElement) {
+            const toppingsContainer = buttonElement.closest('.toppings-container');
+            const newSelect = document.createElement('select');
+            newSelect.className = 'item-topping';
+            
+            // Adiciona a opção "Nenhum"
+            const defaultOption = document.createElement('option');
+            defaultOption.value = '';
+            defaultOption.textContent = 'Nenhum';
+            newSelect.appendChild(defaultOption);
+
+            // Popula com os recheios disponíveis
+            availableToppings.forEach(topping => {
+                const option = document.createElement('option');
+                option.value = topping; // Use o nome do recheio como valor
+                option.textContent = topping;
+                newSelect.appendChild(option);
+            });
+
+            // Adiciona um botão de remover para este campo de recheio
+            const removeToppingFieldBtn = document.createElement('button');
+            removeToppingFieldBtn.type = 'button';
+            removeToppingFieldBtn.textContent = 'X';
+            removeToppingFieldBtn.className = 'remove-single-topping-field-btn';
+            removeToppingFieldBtn.onclick = function() {
+                newSelect.remove();
+                removeToppingFieldBtn.remove();
+            };
+
+            toppingsContainer.insertBefore(newSelect, buttonElement);
+            toppingsContainer.insertBefore(removeToppingFieldBtn, buttonElement);
+        }
+
+
+        // Submissão do formulário
+        document.getElementById('bookingForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            if (validateForm()) {
+                // Enviar para WhatsApp
+                const name = document.getElementById('name').value;
+                const phone = document.getElementById('phone').value;
+                const service = document.getElementById('service').value;
+                const date = document.getElementById('date').value;
+                const time = document.getElementById('time').value;
+                const observations = document.getElementById('observations').value;
+                const address = service === 'delivery' ? document.getElementById('address').value : 'Retirada no local';
+
+                let itemsList = '';
+                const orderItems = document.querySelectorAll('.order-item');
+                orderItems.forEach((item, index) => {
+                    const type = item.querySelector('.item-type');
+                    const typeText = type.options[type.selectedIndex].text;
+                    const qty = item.querySelector('.item-quantity').value;
+                    const toppings = Array.from(item.querySelectorAll('.item-topping'))
+                        .map(toppingSelect => {
+                            const selectedOption = toppingSelect.options[toppingSelect.selectedIndex];
+                            return selectedOption.value ? selectedOption.text : null;
+                        })
+                        .filter(val => val);
+                    
+                    itemsList += `%0AItem ${index+1}: ${typeText} (Qtd: ${qty})`;
+                    itemsList += toppings.length ? `%0ARecheios: ${toppings.join(', ')}` : '';
+                });
+
+                const message = `Novo Agendamento:%0A%0A` +
+                               `Nome: ${name}%0A` +
+                               `Telefone: ${phone}%0A` +
+                               `Serviço: ${service}%0A` +
+                               `Data: ${date}%0A` +
+                               `Horário: ${time}%0A` +
+                               `Endereço: ${address}%0A` +
+                               `Pedidos:${itemsList}%0A` +
+                               `Observações: ${observations}`;
+
+                window.open(`https://wa.me/556992277647?text=${message}`, '_blank');
+
+                const successMessage = document.getElementById('successMessage');
+                successMessage.style.display = 'block';
+                
+                // Resetar formulário
+                this.reset();
+                document.getElementById('addressGroup').style.display = 'none';
+                document.getElementById('orderItems').innerHTML = ''; // Limpa a prancheta de pedidos
+                
+                // Scroll para o topo
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+                
+                // Esconder mensagem após 5 segundos
+                setTimeout(() => {
+                    successMessage.style.display = 'none';
+                }, 5000);
+            }
+        });
+
+        // Remover erros quando o usuário começar a digitar
+        document.querySelectorAll('input, select, textarea').forEach(field => {
+            field.addEventListener('input', function() {
+                const fieldGroup = this.closest('.form-group');
+                if (fieldGroup.classList.contains('error')) {
+                    fieldGroup.classList.remove('error');
+                    const errorElement = fieldGroup.querySelector('.error-message');
+                    if (errorElement) {
+                        errorElement.textContent = '';
+                    }
+                }
+            });
+        });
+    </script>
+</body>
+</html>
